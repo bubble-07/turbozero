@@ -174,6 +174,8 @@ class MCTS(Evaluator):
             # choose next action with PUCT scores
             actions = self.choose_action()
         
+            legal_actions = self.env.get_legal_actions()
+
             # make a step in the environment with the chosen actions
             self.env.step(actions)
 
@@ -208,8 +210,6 @@ class MCTS(Evaluator):
             # get (policy distribution, evaluation) from evaluation function
             with torch.no_grad():
                 policy_logits, values = evaluation_fn(self.env)
-
-            legal_actions = self.env.get_legal_actions()
 
             policy_logits = (policy_logits * legal_actions) + (torch.finfo(torch.float32).min * (~legal_actions))
             # store the policy
@@ -306,4 +306,3 @@ class MCTS(Evaluator):
         self.max_depths -= 1
         self.max_depths.clamp_(min=1)
         
-    

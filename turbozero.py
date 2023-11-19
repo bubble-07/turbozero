@@ -7,7 +7,7 @@ import sys
 from core.algorithms.load import init_evaluator
 from core.demo.demo import Demo
 from core.demo.load import init_demo
-from core.resnet import ResNetConfig, TurboZeroResnet
+from core.ASMRnet import ASMRNetConfig, ASMRNet
 from core.test.tester import  Tester
 from core.test.tournament.tournament import Tournament, TournamentPlayer, load_tournament as load_tournament_checkpoint
 from core.train.trainer import Trainer, init_history
@@ -133,7 +133,7 @@ def load_trainer(args, interactive: bool) -> Trainer:
         model, optimizer = load_model_and_optimizer_from_checkpoint(checkpoint, env_train, device)
         history = checkpoint['history']
     else:
-        model = TurboZeroResnet(ResNetConfig(**raw_config['model_config']), env_train.state_shape, env_train.policy_shape).to(device)
+        model = ASMRNet(ASMRNetConfig(**raw_config['model_config']), env_train.state_shape, env_train.policy_shape).to(device)
         optimizer = torch.optim.SGD(model.parameters(), lr=raw_config['train_mode_config']['learning_rate'], momentum=raw_config['train_mode_config']['momentum'], weight_decay=raw_config['train_mode_config']['c_reg'])
         history = init_history()
 

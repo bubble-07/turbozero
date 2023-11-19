@@ -124,7 +124,13 @@ class Trainer:
         # consistent with open_spiel implementation
         policy_logits = (policy_logits * legal_actions) + (torch.finfo(torch.float32).min * (~legal_actions))
 
-        policy_loss = self.config.policy_factor * torch.nn.functional.cross_entropy(policy_logits, target_policy)
+        print(policy_logits)
+        print(target_policy)
+
+
+        policy_loss = self.config.policy_factor * torch.nn.functional.cross_entropy(policy_logits, target_policy, label_smoothing=0.01)
+        print(policy_loss)
+        sys.exit()
         # multiply by 2 since most other implementations have values rangeing from -1 to 1 whereas ours range from 0 to 1
         # this makes values loss a bit more comparable
         value_loss = torch.nn.functional.mse_loss(values.flatten() * 2, target_value * 2)

@@ -111,7 +111,7 @@ class ConnectXEnv(Env):
         self.next_empty = saved[2].clone() * load_envs.view(-1, 1) + self.next_empty * (~load_envs).view(-1, 1)
         self.update_terminated()
     
-    def reset_terminated_states(self, seed: int | None = None):
+    def reset_terminated_states(self, seed):
         if seed is not None:
             torch.manual_seed(seed)
         else:

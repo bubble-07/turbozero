@@ -1,21 +1,23 @@
-run_tag: 'othello_mini'
+run_tag: 'asmr_mini'
 env_config: {
-  env_type: 'othello',
-  board_size: 8
+  env_type: 'ASMR',
+  matrix_dim: 1,
+  min_initial_set_size: 1,
+  max_initial_set_size: 1,
+  normal_std_dev: 1.0,
+  max_num_turns: 2,
+  discount_factor: 0.01,
 }
 model_config: { # overwritten if loading a checkpoint
-  res_channels: 32,
-  res_blocks: 6,
-  kernel_size: 3,
-  value_fc_size: 32,
-  value_output_activation: "tanh0to1"
+  feature_maps: 128,
+  layers: 40,
 }
 train_mode_config: {
   algo_config: {
     name: "alphazero",
     temperature: 1.0,
-    num_iters: 1000,
-    max_nodes: 400,
+    num_iters: 100,
+    max_nodes: 40,
     puct_coeff: 1.0,
     dirichlet_alpha: 0.45,
     dirichlet_epsilon: 0.25
@@ -25,12 +27,12 @@ train_mode_config: {
   momentum: 0.9,
   c_reg: 0.0001,
   replay_memory_max_size: 20000,
-  replay_memory_min_size: 100,
-  parallel_envs: 16384,
+  replay_memory_min_size: 4,
+  parallel_envs: 4,
   policy_factor: 1.0,
-  minibatch_size: 2048,
-  episodes_per_epoch: 100,
-  episodes_per_minibatch: 25,
+  minibatch_size: 4,
+  episodes_per_epoch: 4,
+  episodes_per_minibatch: 4,
   test_config: {
     algo_config: {
       name: "alphazero",
@@ -42,14 +44,5 @@ train_mode_config: {
       dirichlet_epsilon: 0.0
     },
     episodes_per_epoch: 256,
-    baselines: [
-      {
-        name: 'random'
-      },
-      {
-        name: 'greedy',
-        heuristic: 'corners_and_edges'
-      }
-    ]
   }
 }

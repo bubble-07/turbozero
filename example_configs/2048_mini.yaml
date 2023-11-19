@@ -36,6 +36,6 @@ train_mode_config: {
       rollout_depth: 3,
       puct_coeff: 1.0,
     },
-    episodes_per_epoch: 0
+    episodes_per_epoch: 1
   }
 }

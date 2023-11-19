@@ -22,6 +22,10 @@ from envs.othello.tester import OthelloTester
 from envs.othello.trainer import OthelloTrainer
 from .othello.env import OthelloEnv, OthelloEnvConfig
 from ._2048.env import _2048Env, _2048EnvConfig
+from envs.ASMR.collector import ASMRCollector
+from envs.ASMR.tester import ASMRTester
+from envs.ASMR.trainer import ASMRTrainer
+from .ASMR.env import ASMREnv, ASMREnvConfig
 
 def init_env(device: torch.device, parallel_envs: int, env_config: dict, debug: bool):
     env_type = env_config['env_type']
@@ -31,6 +35,9 @@ def init_env(device: torch.device, parallel_envs: int, env_config: dict, debug: 
     elif env_type == '2048':
         config = _2048EnvConfig(**env_config)
         return _2048Env(parallel_envs, config, device, debug)
+    elif env_type == 'ASMR':
+        config = ASMREnvConfig(**env_config)
+        return ASMREnv(parallel_envs, config, device, debug)
     elif env_type == 'connect_x':
         config = ConnectXConfig(**env_config)
         return ConnectXEnv(parallel_envs, config, device, debug)
@@ -50,6 +57,11 @@ def init_collector(episode_memory_device: torch.device, env_type: str, evaluator
         )
     elif env_type == 'connect_x':
         return ConnectXCollector(
+            evaluator=evaluator,
+            episode_memory_device=episode_memory_device
+        )
+    elif env_type == 'ASMR':
+        return ASMRCollector(
             evaluator=evaluator,
             episode_memory_device=episode_memory_device
         )
@@ -96,6 +108,16 @@ def init_tester(
             log_results=log_results,
             debug=debug
         )
+    elif env_type == 'ASMR':
+        return ASMRTester(
+            config=TesterConfig(**test_config),
+            collector=collector,
+            model=model,
+            optimizer=optimizer,
+            history=history,
+            log_results=log_results,
+            debug=debug
+        )
     else:
         raise NotImplementedError(f'Tester for {env_type} not supported')
 
@@ -104,7 +126,7 @@ def init_trainer(
     env_type: str, 
     collector: Collector, 
     tester: Tester, 
-    model: TurboZeroResnet,
+    model,
     optimizer: torch.optim.Optimizer,
     train_config: dict,
     raw_env_config: dict,
@@ -167,6 +189,21 @@ def init_trainer(
             interactive=interactive,
             run_tag = run_tag,
             debug = debug
+        )
+    elif env_type == 'ASMR':
+        return ASMRTrainer(
+            config = trainer_config,
+            collector = collector,
+            tester = tester,
+            model = model,
+            optimizer = optimizer,
+            device = device,
+            raw_train_config = train_config,
+            raw_env_config = raw_env_config,
+            history = history,
+            log_results = log_results,
+            interactive = interactive,
+            run_tag = run_tag
         )
     else:
         logging.warn(f'No trainer found for environment {env_type}')
